@@ -107,7 +107,7 @@ height: 750px;">
                             console.log(response);
                             if (response.Existe == true) {
                                 if (response.Tipo == "Paciente") {
-                                    fetch(`https://backend-uhospital-k.herokuapp.com/${usuario}`, {
+                                    fetch(`https://backend-uhospital-k.herokuapp.com/Pacientes/${usuario}`, {
                                         method: 'GET',
                                         headers: {
                                             'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ height: 750px;">
                                             }
                                         })
                                 } else if (response.Tipo == "Doctor") {
-                                    fetch(`https://backend-uhospital-k.herokuapp.com/${usuario}`, {
+                                    fetch(`https://backend-uhospital-k.herokuapp.com/Doctores/${usuario}`, {
                                         method: 'GET',
                                         headers: {
                                             'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ height: 750px;">
                                         })
 
                                 } else {
-                                    fetch(`https://backend-uhospital-k.herokuapp.com/${usuario}`, {
+                                    fetch(`https://backend-uhospital-k.herokuapp.com/Enfermeras/${usuario}`, {
                                         method: 'GET',
                                         headers: {
                                             'Content-Type': 'application/json',
