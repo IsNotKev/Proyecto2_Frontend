@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <title>UHospital - Admin</title>
+</head>
+
+<body style="background: #DBDBDB;overflow-x: hidden;">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">
+            <img src="src/Logo.png" alt="" width="30" height="30">
+        </a>
+        <a class="navbar-brand" href="#">UHospital - Administrador (Abner Cardona)</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+            aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="cargar(this)">Cargar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="visualzar(this)">Visualizar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="cerrar(this)">Cerrar Sesión</a>
+                </li>
+
+            </ul>
+
+        </div>
+    </nav>
+
+    <br><br><br>
+
+    <div class="nav nav-tabs" id="nav-tab" role="tablist" style="justify-content: center;width: 50%;margin: auto;">
+        <button class="nav-link active" id="nav-paciente-tab" data-bs-toggle="tab" data-bs-target="#nav-paciente"
+            type="button" role="tab" aria-controls="nav-paciente" aria-selected="true">Pacientes</button>
+        <button class="nav-link" id="nav-medicos-tab" data-bs-toggle="tab" data-bs-target="#nav-medicos" type="button"
+            role="tab" aria-controls="nav-medicos" aria-selected="false">Médicos</button>
+        <button class="nav-link" id="nav-enfermeras-tab" data-bs-toggle="tab" data-bs-target="#nav-enfermeras"
+            type="button" role="tab" aria-controls="nav-enfermeras" aria-selected="false">Enfermeras</button>
+        <button class="nav-link" id="nav-medicamentos-tab" data-bs-toggle="tab" data-bs-target="#nav-medicamentos"
+            type="button" role="tab" aria-controls="nav-medicamentos" aria-selected="false">Medicamentos</button>
+    </div>
+
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-paciente" role="tabpanel" aria-labelledby="nav-paciente-tab">
+            <br><br>
+            <div class="form-group">
+                <input type="file" accept=".csv" class="form-control-file" id="archivoPaciente"
+                    aria-describedby="fileHelp" style="margin-left: 35%;">
+                <center><button type="button" class="btn btn-success" style="margin-top: 15px;width: 30%;"
+                        onclick="cargarPaciente()">Cargar Pacientes</button></center>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="nav-medicos" role="tabpanel" aria-labelledby="nav-medicos-tab">
+            <br><br>
+            <div class="form-group">
+                <input type="file" accept=".csv" class="form-control-file" id="archivoDoctores"
+                    aria-describedby="fileHelp" style="margin-left: 35%;">
+                <center><button type="button" class="btn btn-success" style="margin-top: 15px;width: 30%;"
+                        onclick="cargarDoctores()">Cargar Doctores</button></center>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="nav-enfermeras" role="tabpanel" aria-labelledby="nav-enfermeras-tab">
+            <br><br>
+            <div class="form-group">
+                <input type="file" accept=".csv" class="form-control-file" id="archivoEnfermeras"
+                    aria-describedby="fileHelp" style="margin-left: 35%;">
+                <center><button type="button" class="btn btn-success" style="margin-top: 15px;width: 30%;"
+                        onclick="cargarEnfermeras()">Cargar Enfermeras</button></center>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="nav-medicamentos" role="tabpanel" aria-labelledby="nav-medicamentos-tab">
+            <br><br>
+            <div class="form-group">
+                <input type="file" accept=".csv" class="form-control-file" id="archivoMedicamentos"
+                    aria-describedby="fileHelp" style="margin-left: 35%;">
+                <center><button type="button" class="btn btn-success" style="margin-top: 15px;width: 30%;"
+                        onclick="cargarMedicamentos()">Cargar Medicamentos</button></center>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+        crossorigin="anonymous"></script>
+    <script>
+
+        var linesPacientes = []
+        var linesDoctores = []
+        var linesEnfermeras = []
+        var linesMedicamentos = []
+
+
+        function cerrar(boton) {
+            location.href = "InicioSesion.html"
+        }
+
+
+        function cargar(boton) {
+            location.href = "Admin.html"
+        }
+
+        function visualzar(boton) {
+            location.href = "Visualizar.html"
+        }
+
+        function parseCSV(text) {
+            // Obtenemos las lineas del texto
+            let line = text.replace(/\r/g, '').split('\n');
+            return line.map(line => {
+                // Por cada linea obtenemos los valores
+                let values = line.split(',');
+                return values;
+            });
+        }
+
+        function readFile1(evt) {
+            let file = evt.target.files[0];
+            let reader = new FileReader();
+            reader.onload = (e) => {
+                // Cuando el archivo se terminó de cargar
+                linesDoctores = null;
+                linesDoctores = parseCSV(e.target.result);
+            };
+            // Leemos el contenido del archivo seleccionado
+            reader.readAsBinaryString(file);
+        }
+
+        function readFile(evt) {
+            let file = evt.target.files[0];
+            let reader = new FileReader();
+            reader.onload = (e) => {
+                // Cuando el archivo se terminó de cargar
+                linesPacientes = null;
+                linesPacientes = parseCSV(e.target.result);
+            };
+            // Leemos el contenido del archivo seleccionado
+            reader.readAsBinaryString(file);
+        }
+
+        function readFile2(evt) {
+            let file = evt.target.files[0];
+            let reader = new FileReader();
+            reader.onload = (e) => {
+                // Cuando el archivo se terminó de cargar
+                linesEnfermeras = null;
+                linesEnfermeras = parseCSV(e.target.result);
+            };
+            // Leemos el contenido del archivo seleccionado
+            reader.readAsBinaryString(file);
+        }
+
+        function readFile3(evt) {
+            let file = evt.target.files[0];
+            let reader = new FileReader();
+            reader.onload = (e) => {
+                // Cuando el archivo se terminó de cargar
+                linesMedicamentos = null;
+                linesMedicamentos = parseCSV(e.target.result);
+            };
+            // Leemos el contenido del archivo seleccionado
+            reader.readAsBinaryString(file);
+        }
+
+        function cargarPaciente() {
+
+            document.getElementById('archivoPaciente').values = null
+
+            for (var i = 1; i < linesPacientes.length; i++) {
+
+                var tel
+
+                if (linesPacientes[i][6] == null) {
+                    tel = "-"
+                } else {
+                    tel = linesPacientes[i][6]
+                }
+
+                var objeto = {
+                    'nombre': linesPacientes[i][0],
+                    'apellido': linesPacientes[i][1],
+                    'nacimiento': linesPacientes[i][2],
+                    'sexo': linesPacientes[i][3],
+                    'usuario': linesPacientes[i][4],
+                    'contra': linesPacientes[i][5],
+                    'telefono': tel
+                }
+
+                console.log(objeto)
+
+                fetch('https://backend-uhospital-k.herokuapp.com/Pacientes', {
+                    method: 'POST',
+                    body: JSON.stringify(objeto),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                    }
+                })
+                    .then(res => res.json())
+                    .catch(err => {
+                        console.error('Error:', err)
+                        alert("Ocurrio un error, ver la consola")
+                    })
+                    .then(response => {
+                    })
+            }
+            alert('Pacientes Agregados Exitosamente')
+        }
+
+        function cargarEnfermeras() {
+
+            document.getElementById('archivoEnfermeras').values = null
+
+            for (var i = 1; i < linesEnfermeras.length; i++) {
+
+                var tel
+
+                if (linesEnfermeras[i][6] == null) {
+                    tel = "-"
+                } else {
+                    tel = linesEnfermeras[i][6]
+                }
+
+                var objeto = {
+                    'nombre': linesEnfermeras[i][0],
+                    'apellido': linesEnfermeras[i][1],
+                    'nacimiento': linesEnfermeras[i][2],
+                    'sexo': linesEnfermeras[i][3],
+                    'usuario': linesEnfermeras[i][4],
+                    'contra': linesEnfermeras[i][5],
+                    'telefono': tel
+                }
+
+                console.log(objeto)
+
+                fetch('https://backend-uhospital-k.herokuapp.com/Enfermeras', {
+                    method: 'POST',
+                    body: JSON.stringify(objeto),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                    }
+                })
+                    .then(res => res.json())
+                    .catch(err => {
+                        console.error('Error:', err)
+                        alert("Ocurrio un error, ver la consola")
+                    })
+                    .then(response => {
+                    })
+            }
+            alert('Enfermeras Agregadas Exitosamente')
+        }
+
+        function cargarDoctores() {
+
+            document.getElementById('archivoDoctores').values = null
+
+            for (var i = 1; i < linesDoctores.length; i++) {
+
+                var tel
+
+                if (linesDoctores[i][7] == null) {
+                    tel = "-"
+                } else {
+                    tel = linesDoctores[i][7]
+                }
+
+                var objeto = {
+                    'nombre': linesDoctores[i][0],
+                    'apellido': linesDoctores[i][1],
+                    'nacimiento': linesDoctores[i][2],
+                    'sexo': linesDoctores[i][3],
+                    'usuario': linesDoctores[i][4],
+                    'contra': linesDoctores[i][5],
+                    'especialidad': linesDoctores[i][6],
+                    'telefono': tel,
+                    'aceptadas' : parseInt(0)
+                }
+
+                console.log(objeto)
+
+                fetch('https://backend-uhospital-k.herokuapp.com/Doctores', {
+                    method: 'POST',
+                    body: JSON.stringify(objeto),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                    }
+                })
+                    .then(res => res.json())
+                    .catch(err => {
+                        console.error('Error:', err)
+                        alert("Ocurrio un error, ver la consola")
+                    })
+                    .then(response => {
+                    })
+            }
+            alert('Médicos Agregados Exitosamente')
+        }
+
+        function cargarMedicamentos() {
+
+            document.getElementById('archivoMedicamentos').values = null
+
+            fetch('https://backend-uhospital-k.herokuapp.com/Medicamentos', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            })
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response => {
+                    var DatosJson = JSON.parse(JSON.stringify(response));
+                    var long = DatosJson.length
+
+                    if(long > 0){
+                        var cant = DatosJson[long-1].Id
+                    }else{
+                        var cant = 0
+                    }
+
+                    for (var i = 1; i < linesMedicamentos.length; i++) {
+                        var objeto = {
+                            'id': (i + cant),
+                            'nombre': linesMedicamentos[i][0],
+                            'precio': parseFloat(linesMedicamentos[i][1]),
+                            'descripcion': linesMedicamentos[i][2],
+                            'cant': parseInt(linesMedicamentos[i][3]),
+                            'vendidos': parseInt(0)
+                        }
+
+                        console.log(objeto)
+
+                        fetch('https://backend-uhospital-k.herokuapp.com/Medicamentos', {
+                            method: 'POST',
+                            body: JSON.stringify(objeto),
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*',
+                            }
+                        })
+                            .then(res => res.json())
+                            .catch(err => {
+                                console.error('Error:', err)
+                                alert("Ocurrio un error, ver la consola")
+                            })
+                            .then(response => {
+                            })
+                    }
+                    alert('Medicamentos Agregados Exitosamente')
+                })
+        }
+
+        document.getElementById('archivoPaciente').addEventListener('change', readFile, false);
+        document.getElementById('archivoDoctores').addEventListener('change', readFile1, false);
+        document.getElementById('archivoEnfermeras').addEventListener('change', readFile2, false);
+        document.getElementById('archivoMedicamentos').addEventListener('change', readFile3, false);
+
+    </script>
+
+</body>
+
+</html>

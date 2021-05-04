@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <title>UHospital - Factura</title>
+</head>
+
+<body onload="cargar()">
+    <div class="jumbotron" style="width: 40%;margin: auto;margin-top: 30px;">
+        <center>
+            <h2 class="display-3">Facturación</h2>
+        </center>
+        <hr class="my-4">
+        <center>
+            <div class="input-group" style="width: 70%;">
+                <h5 style="margin-top: auto;">Fecha : </h5>
+                <input style="margin-left: 35px;" type="date" class="form-control" id="fecha" min="2021-05-01"
+                    max="2021-12-31">
+            </div>
+            <br>
+            <div class="input-group" style="width: 70%;">
+                <h5 style="margin-top: auto;">Paciente : </h5>
+                <input style="margin-left: 15px;" type="text" class="form-control" id="paciente"
+                    aria-describedby="emailHelp" placeholder="Ingrese Nombre">
+            </div>
+            <br>
+            <div class="input-group" style="width: 70%;">
+                <h5 style="margin-top: auto;">Doctor : </h5>
+                <select style="margin-left: 25px;" class="form-control" id="doctor">
+                </select>
+            </div>
+            <br>
+            <div class="input-group" style="width: 70%;">
+                <h5 style="margin-top: auto;">Consulta : </h5>
+                <div class="input-group-prepend" style="margin-left: 15px;">
+                    <span class="input-group-text">Q.</span>
+                </div>
+                <input type="number" class="form-control" id="consulta" min="0" placeholder="Precio de Consulta">
+            </div>
+            <br>
+            <div class="input-group" style="width: 70%;">
+                <h5 style="margin-top: auto;">Operación : </h5>
+                <div class="input-group-prepend" style="margin-left: 15px;">
+                    <span class="input-group-text">Q.</span>
+                </div>
+                <input type="number" class="form-control" id="operacion" min="0" placeholder="Precio de Operación">
+            </div>
+            <br>
+            <div class="input-group" style="width: 70%;">
+                <h5 style="margin-top: auto;">Internado : </h5>
+                <div class="input-group-prepend" style="margin-left: 15px;">
+                    <span class="input-group-text">Q.</span>
+                </div>
+                <input type="number" class="form-control" id="internado" min="0" placeholder="Precio de Internado">
+            </div>
+            <br><br>
+            <button type="button" class="btn btn-primary" style="width: 70%;margin: auto;"
+                onclick="facturar()">Facturar</button>
+        </center>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="jsPDF-1.3.2/dist/jspdf.min.js"></script>
+    <script src="jsPDF-AutoTable-master/dist/jspdf.plugin.autotable.min.js"></script>
+    <script src="jsPDF-1.3.2/examples/js/images.js"></script>
+    <script src="jsPDF-1.3.2/examples/js/images_png.js"></script>
+    <script src="jsPDF-1.3.2/plugins/addimage.js"></script>
+    <script src="jsPDF-1.3.2/plugins/png_support.js"></script>
+    <script>
+
+        function facturar() {
+
+            if (document.querySelector('#fecha').value != "") {
+                if (document.querySelector('#paciente').value != "") {
+                    if (document.querySelector('#doctor').value != "") {
+                        if (document.querySelector('#consulta').value != "") {
+                            factura()
+                        } else {
+                            alert("Ingrese el precio de la consulta para facturar")
+                        }
+                    } else {
+                        alert("Ingrese doctor para facturar")
+                    }
+                } else {
+                    alert("Ingrese paciente para facturar")
+                }
+            } else {
+                alert("Ingrese fecha para facturar")
+            }
+        }
+
+        function factura() {
+            var paciente = document.querySelector('#paciente').value
+            var doctor = document.querySelector('#doctor').value
+            var consulta = parseFloat(document.querySelector('#consulta').value)
+
+            var f = document.querySelector('#fecha').value.split("-")
+            var nfecha = f[2] + "/" + f[1] + "/" + f[0]
+
+            if (document.querySelector('#operacion').value != "") {
+                if (document.querySelector('#internado').value != "") {
+                    var operacion = parseFloat(document.querySelector('#operacion').value)
+                    var internado = parseFloat(document.querySelector('#internado').value)
+                } else {
+                    var operacion = parseFloat(document.querySelector('#operacion').value)
+                    var internado = 0.00
+                }
+            } else if (document.querySelector('#internado').value != "") {
+                var internado = parseFloat(document.querySelector('#internado').value)
+                var operacion = 0.00
+            } else {
+                var operacion = 0.00
+                var internado = 0.00
+            }
+
+            var total = consulta + operacion + internado
+            var doc = new jsPDF();
+            doc.setFontSize(14);
+            doc.text(175, 10, nfecha);
+            doc.setFontSize(30);
+            doc.setTextColor(0, 0, 255);
+            doc.text("-UHospital-", 20, 30);
+            doc.setFontSize(14);
+            doc.setTextColor(100);
+            doc.text(125, 29, "Paciente: " + paciente);
+            doc.text(125, 39, "Doctor: " + doctor);
+
+            doc.autoTable({
+                head: [['Descripción', 'Precio', 'Total']],
+                body: [
+                    ['Consulta', 'Q.' + consulta, ''],
+                    ['Operación', 'Q.' + operacion, ''],
+                    ['Internado', 'Q.' + internado, ''],
+                    ['', '', 'Q.' + total],
+                ],
+                margin: { top: 60 }
+            })
+
+            doc.save("Factura_" + paciente + ".pdf");
+        }
+
+        function cargar() {
+            fetch('https://backend-uhospital-k.herokuapp.com/Doctores', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            })
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response => {
+                    var DatosJson = JSON.parse(JSON.stringify(response));                   
+                    for (i = 0; i < DatosJson.length; i++) {
+                        $("#doctor").append('<option>'+DatosJson[i].Nombre+' '+DatosJson[i].Apellido+'</option>');
+                    }
+                })
+        }
+    </script>
+</body>
+
+</html>

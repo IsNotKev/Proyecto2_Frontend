@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <title>UHospital - Paciente</title>
+</head>
+
+<body style="background: #DBDBDB;overflow-x: hidden;" onload="cargar()">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">
+            <img src="src/Logo.png" alt="" width="30" height="30">
+        </a>
+        <a class="navbar-brand" href="#" id="p">UHospital - Paciente</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+            aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="perfil()">Perfil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="cita(this)">Solicitar Cita</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="medicina(this)">Comprar Medicina</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="cerrar()">Cerrar Sesión</a>
+                </li>
+
+            </ul>
+
+        </div>
+    </nav>
+
+    <div class="jumbotron" style="width: 70%;margin: auto; margin-top: 25px;">
+        <h1 class="display-3">Solicitar Cita</h1>
+        <hr class="my-4">
+        <br>
+        <center>
+            <div class="form-group" id="estado"></div>
+            <div class="form-group" style="width: 30%;margin-left:auto;display: inline-block;">
+                <label>Fecha</label>
+                <br>
+                <input type="date" class="form-control" id="fecha" min="2021-05-01" max="2021-12-31"
+                    style="width: 100%;">
+            </div>
+            <div class="form-group" style="width: 30%;margin-left:auto;display: inline-block;">
+                <label>Hora</label>
+                <br>
+                <input type="number" class="form-control" id="hora" style="width: 25%;display: inline-block;" min="06"
+                    max="19" value="06">
+                <p style="display: inline-block;"> : </p>
+                <input type="number" class="form-control" id="min" style="width: 25%;display: inline-block;" min="00"
+                    max="59" value="00">
+            </div>
+        </center>
+        <div class="form-group" style="width: 60%;margin:auto;">
+            <label for="exampleTextarea">Motivo</label>
+            <textarea class="form-control" id="motivo" rows="3"
+                style="margin-top: 0px; margin-bottom: 30px; height: 52px;"></textarea>
+        </div>
+        <center><button id="solicitar" type="button" class="btn btn-primary" style="width: 35%;"
+                onclick="solicitar()">Solicitar</button></center>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        function perfil() {
+            var usuario = sessionStorage.buscar
+            var tipo = "paciente"
+            var regreso = "usuario"
+            sessionStorage.setItem("buscar", usuario)
+            sessionStorage.setItem("tipo", tipo)
+            sessionStorage.setItem("regreso", regreso)
+            location.href = "Modificar.html"
+        }
+        function cerrar() {
+            fetch('https://backend-uhospital-k.herokuapp.com/Carrito', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            })
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response => {
+                    inicio()
+                })
+        }
+        function inicio() {
+            location.href = "InicioSesion.html"
+        }
+        function cita(boton) {
+            location.href = "Paciente.html"
+        }
+        function medicina(boton) {
+            location.href = "Medicina.html"
+        }
+        function solicitar() {
+            if (document.querySelector("#fecha").value != "") {
+                if (document.querySelector("#hora").value == "" || document.querySelector("#min").value == "") {
+                    alert("Ingrese Hora Antes De Solicitar Cita.")
+                } else {
+                    if (document.querySelector("#motivo").value != "") {
+                        var paciente = sessionStorage.buscar
+                        fetch(`https://backend-uhospital-k.herokuapp.com/Citas/${paciente}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Access-Control-Allow-Origin': '*',
+                            }
+                        })
+                            .then(res => res.json())
+                            .catch(err => {
+                                console.error('Error:', err)
+                                alert("Ocurrio un error, ver la consola")
+                            })
+                            .then(response => {
+                                if (response.Mensaje == "No Tiene Cita") {
+                                    var usuario = sessionStorage.buscar
+
+                                    var f = document.querySelector('#fecha').value.split("-")
+                                    var nfecha = f[2] + "/" + f[1] + "/" + f[0]
+
+                                    var hora = document.querySelector('#hora').value + ":" + document.querySelector('#min').value
+
+                                    var objeto = {
+                                        'paciente': usuario,
+                                        'fecha': nfecha,
+                                        'hora': hora,
+                                        'motivo': document.querySelector('#motivo').value,
+                                        'doctor': '',
+                                        'estado': 'Pendiente'
+                                    }
+
+                                    console.log(objeto)
+
+                                    fetch('https://backend-uhospital-k.herokuapp.com/Citas', {
+                                        method: 'POST',
+                                        body: JSON.stringify(objeto),
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'Access-Control-Allow-Origin': '*',
+                                        }
+                                    })
+                                        .then(res => res.json())
+                                        .catch(err => {
+                                            console.error('Error:', err)
+                                            alert("Ocurrio un error, ver la consola")
+                                        })
+                                        .then(response => {
+                                            alert(response.Mensaje)
+                                            location.reload()
+                                        })
+                                } else {
+                                    var usuario = sessionStorage.buscar
+
+                                    var f = document.querySelector('#fecha').value.split("-")
+                                    var nfecha = f[2] + "/" + f[1] + "/" + f[0]
+
+                                    var hora = document.querySelector('#hora').value + ":" + document.querySelector('#min').value
+
+                                    var objeto = {
+                                        'fecha': nfecha,
+                                        'hora': hora,
+                                        'motivo': document.querySelector('#motivo').value,
+                                        'doctor': '',
+                                        'estado': 'Pendiente'
+                                    }
+
+                                    console.log(objeto)
+
+                                    fetch(`https://backend-uhospital-k.herokuapp.com/Citas/${usuario}`, {
+                                        method: 'PUT',
+                                        body: JSON.stringify(objeto),
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'Access-Control-Allow-Origin': '*',
+                                        }
+                                    })
+                                        .then(res => res.json())
+                                        .catch(err => {
+                                            console.error('Error:', err)
+                                            alert("Ocurrio un error, ver la consola")
+                                        })
+                                        .then(response => {
+                                            alert("Cita solicitada.")
+                                            location.reload()
+                                        })
+                                }
+
+                            })
+
+
+                    } else {
+                        alert("Escriba Motivo Antes De Solicitar Cita.")
+                    }
+                }
+            } else {
+                alert("Escriba Fecha Antes De Solicitar Cita.")
+            }
+        }
+
+        function cargar() {
+            var usuario = sessionStorage.buscar
+
+            document.querySelector('#p').innerHTML = "UHospital - Paciente (" + usuario + ")"
+
+            fetch(`https://backend-uhospital-k.herokuapp.com/Citas/${usuario}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            })
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response => {
+                    console.log(response)
+                    if (response.Mensaje == "No Tiene Cita" || response.Estado == "Completada" || response.Estado == "Rechazada") {
+
+                        if (response.Estado == "Completada" || response.Estado == "Rechazada") {
+                            $("#estado").append('<h4>Estado : <p class="text-secondary">' + response.Estado + '</p></h4>')
+                            var f = response.Fecha.split("/")
+                            var nfecha = f[2] + "-" + f[1] + "-" + f[0]
+
+                            document.querySelector('#fecha').value = nfecha
+
+                            document.querySelector('#motivo').value = response.Motivo
+
+                            var nhora = response.Hora.split(":")
+
+                            document.querySelector('#hora').value = nhora[0]
+                            document.querySelector('#min').value = nhora[1]
+                        }
+
+                    } else {
+                        var f = response.Fecha.split("/")
+                        var nfecha = f[2] + "-" + f[1] + "-" + f[0]
+
+                        document.querySelector('#fecha').value = nfecha
+
+                        document.querySelector('#motivo').value = response.Motivo
+
+                        var nhora = response.Hora.split(":")
+
+                        document.querySelector('#hora').value = nhora[0]
+                        document.querySelector('#min').value = nhora[1]
+
+                        $("#estado").append('<h4>Estado : <p class="text-secondary">' + response.Estado + '</p></h4>')
+                        $("#fecha").prop("disabled", true);
+                        $("#hora").prop("disabled", true);
+                        $("#min").prop("disabled", true);
+                        $("#motivo").prop("disabled", true);
+                        $("#solicitar").prop("disabled", true);
+                    }
+                })
+        }
+    </script>
+
+</body>
+
+</html>

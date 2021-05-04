@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <title>UHospital - Registro</title>
+</head>
+
+<body style="background: #ADA996;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to bottom, #EAEAEA, #DBDBDB, #F2F2F2, #ADA996);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to bottom, #EAEAEA, #DBDBDB, #F2F2F2, #ADA996); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+height: 800px;">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#" onclick="inicio(this)">
+      <img src="src/Logo.png" alt="" width="30" height="30">
+    </a>
+    <a class="navbar-brand" href="#" onclick="inicio(this)">UHospital</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+      aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="iniciar(this)">Iniciar Sesión
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="registrarse(this)">Registrarse</a>
+        </li>
+
+      </ul>
+
+    </div>
+  </nav>
+
+
+  <center>
+    <form style="margin-top: 25px;">
+      <fieldset>
+        <legend>Registro De Pacientes</legend>
+        </div>
+        <div class="form-group" style="width: 30%;">
+          <label>Nombre</label>
+          <input type="text" class="form-control" id="nombre" aria-describedby="emailHelp"
+            placeholder="Ingrese Su Nombre">
+        </div>
+        <div class="form-group" style="width: 30%;">
+          <label>Apellido</label>
+          <input type="text" class="form-control" id="apellido" aria-describedby="emailHelp"
+            placeholder="Ingrese Su Apellido">
+        </div>
+        <div class="form-group" style="width: 30%;">
+          <label>Fecha De Nacimiento</label>
+          <br>
+          <input type="date" class="form-control" id="fecha" min="1900-01-01" max="2002-12-31" style="width: 100%;">
+        </div>
+        <div class="form-group" style="width: 30%;">
+          <label for="exampleSelect1">Sexo</label>
+          <select class="form-control" id="sexo">
+            <option>Masculino</option>
+            <option>Femenino</option>
+          </select>
+        </div>
+        <div class="form-group" style="width: 30%;">
+          <label>Usuario</label>
+          <input type="text" class="form-control" id="usuario" placeholder="Ingrese Usuario">
+        </div>
+        <div class="form-group" style="width: 30%;">
+          <label>Contraseña</label>
+          <input type="password" class="form-control" id="contra" placeholder="Ingrese Contraseña">
+        </div>
+        <div class="form-group" style="width: 30%;">
+          <label class="control-label">Teléfono</label>
+          <div class="form-group">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">+502</span>
+              </div>
+              <input type="number" class="form-control" id="telefono">
+            </div>
+          </div>
+        </div>
+        <br>
+        <button onclick="registro()" type="button" class="btn btn-primary" style="width: 20%;">Registrarse</button>
+    </form>
+  </center>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+    crossorigin="anonymous"></script>
+  <script>
+    function registrarse(boton) {
+      location.href = "Registro.html"
+    }
+
+    function iniciar(boton) {
+      location.href = "InicioSesion.html"
+    }
+
+    function inicio(boton) {
+      location.href = "PaginaPrincipal.html"
+    }
+
+    function registro() {
+      if (document.querySelector('#nombre').value != "") {
+        if (document.querySelector('#apellido').value != "") {
+          if (document.querySelector('#fecha').value != "") {
+            if (document.querySelector('#usuario').value != "") {
+              if (document.querySelector('#contra').value != "") {
+                cant = document.querySelector('#usuario').value.split(" ")
+                if (cant.length <= 1) {
+                  cant = document.querySelector('#contra').value.split("")
+                  if (cant.length >= 8) {
+
+                    var f = document.querySelector('#fecha').value.split("-")
+                    var nfecha = f[2] + "/" + f[1] + "/" + f[0]
+
+                    if (document.querySelector('#sexo').value == "Masculino") {
+                      var sex = "M"
+                    } else {
+                      var sex = "F"
+                    }
+
+                    if (document.querySelector('#telefono').value == "") {
+                      var tel = "-"
+                    } else {
+                      var tel = document.querySelector('#telefono').value
+                    }
+
+                    var nombre = document.querySelector('#usuario').value
+
+                    fetch(`https://backend-uhospital-k.herokuapp.com/${nombre}`, {
+                      method: 'GET',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*',
+                      }
+                    })
+                      .then(res => res.json())
+                      .catch(err => {
+                        console.error('Error:', err)
+                        alert("Ocurrio un error, ver la consola")
+                      })
+                      .then(response => {
+                        console.log(response);
+                        if (response.Existe == false && document.querySelector('#usuario').value != "admin") {
+                          var objeto = {
+                            'nombre': document.querySelector('#nombre').value,
+                            'apellido': document.querySelector('#apellido').value,
+                            'nacimiento': nfecha,
+                            'sexo': sex,
+                            'usuario': document.querySelector('#usuario').value,
+                            'contra': document.querySelector('#contra').value,
+                            'telefono': tel
+                          }
+
+                          fetch('https://backend-uhospital-k.herokuapp.com/Pacientes', {
+                            method: 'POST',
+                            body: JSON.stringify(objeto),
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Access-Control-Allow-Origin': '*',
+                            }
+                          })
+                            .then(res => res.json())
+                            .catch(err => {
+                              console.error('Error:', err)
+                              alert("Ocurrio un error, ver la consola")
+                            })
+                            .then(response => {
+                              alert("Cuenta Creada. Ya Puedes Iniciar Sesión")
+                              document.querySelector('#nombre').value = ""
+                              document.querySelector('#apellido').value = ""
+                              document.querySelector('#fecha').value = ""
+                              document.querySelector('#usuario').value = ""
+                              document.querySelector('#contra').value = ""
+                              document.querySelector('#telefono').value = ""
+                              document.querySelector('#sexo').value = "Masculino"
+                            })
+
+                        } else {
+                          alert("Usuario Existente. Por Favor Ingrese Otro")
+                        }
+                      })
+                  } else {
+                    alert("Por Favor Elija Una Contraseña Con Más De 8 Carácteres")
+                  }
+                } else {
+                  alert("El Usuario No Puede Tener Espacios.")
+                }
+              } else {
+                alert("Escriba Una Contraseña Antes De Registrarse")
+              }
+            } else {
+              alert("Escriba Un Usuario Antes De Registrarse")
+            }
+          } else {
+            alert("Escriba Su Fecha De Nacimiento Antes de Registrarse")
+          }
+        } else {
+          alert("Escriba Su Apellido Antes de Registrarse")
+        }
+      } else {
+        alert("Escriba Su Nombre Antes de Registrarse")
+      }
+    }
+  </script>
+</body>
+
+</html>

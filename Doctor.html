@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <title>UHospital - Doctor</title>
+</head>
+
+<body onload="cargar()">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">
+            <img src="src/Logo.png" alt="" width="30" height="30">
+        </a>
+        <a class="navbar-brand" href="#" id="p">UHospital - Doctor</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+            aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="perfil()">Perfil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="receta(this)">Generar Receta</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="cerrar(this)">Cerrar Sesión</a>
+                </li>
+
+            </ul>
+
+        </div>
+    </nav>
+
+    <br><br><br>
+
+    <div class="nav nav-tabs" id="nav-tab" role="tablist" style="justify-content: center;width: 60%;margin: auto;">
+        <button class="nav-link active" id="nav-paciente-tab" data-bs-toggle="tab" data-bs-target="#nav-paciente"
+            type="button" role="tab" aria-controls="nav-paciente" aria-selected="true">Citas Pendientes</button>
+        <button class="nav-link" id="nav-medicos-tab" data-bs-toggle="tab" data-bs-target="#nav-medicos" type="button"
+            role="tab" aria-controls="nav-medicos" aria-selected="false">Citas Aceptadas</button>
+    </div>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-paciente" role="tabpanel" aria-labelledby="nav-paciente-tab">
+            <br><br>
+            <table class="table table" style="width: 50%;margin: auto;" id="tablaPendientes">
+
+            </table>
+        </div>
+        <div class="tab-pane fade" id="nav-medicos" role="tabpanel" aria-labelledby="nav-medicos-tab">
+            <br><br>
+            <table class="table table" style="width: 50%;margin: auto;" id="tablaAceptadas">
+
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        function perfil() {
+            var usuario = sessionStorage.buscar
+            var tipo = "doc"
+            var regreso = "usuariodoctor"
+            sessionStorage.setItem("buscar", usuario)
+            sessionStorage.setItem("tipo", tipo)
+            sessionStorage.setItem("regreso", regreso)
+            location.href = "Modificar.html"
+        }
+        function cerrar(boton) {
+            location.href = "InicioSesion.html"
+        }
+        function cargar() {
+            var usuario = sessionStorage.buscar
+
+            document.querySelector('#p').innerHTML = "UHospital - Doctor (" + usuario + ")"
+            fetch('https://backend-uhospital-k.herokuapp.com/Citas', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            })
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response => {
+                    var DatosJson = JSON.parse(JSON.stringify(response));
+                    $("#tablaPendientes").empty()
+                    $("#tablaPendientes").append('<thead><tr class="table-dark"><th scope="col">Fecha</th><th scope="col">Hora</th><th scope="col">Motivo</th><th scope="col">Opciones</th></tr></thead>')
+                    $("#tablaAceptadas").empty()
+                    $("#tablaAceptadas").append('<thead><tr class="table-dark"><th scope="col">Fecha</th><th scope="col">Hora</th><th scope="col">Motivo</th><th scope="col">Opciones</th></tr></thead>')
+                    for (i = 0; i < DatosJson.length; i++) {
+                        if (DatosJson[i].Estado == "Pendiente") {
+                            $("#tablaPendientes").append('<tbody><tr>' +
+                                '<td  style="dislay: none;" scope="row">' + DatosJson[i].Fecha + '</td>' +
+                                '<td  style="dislay: none;">' + DatosJson[i].Hora + '</td>' +
+                                '<td  style="dislay: none;">' + DatosJson[i].Motivo + '</td>' +
+                                '<td  style="dislay: none;"> <button onclick="aceptar(this)" type="button" value= ' + DatosJson[i].Paciente + ' class="btn btn-success">Aceptar</button>   <button value= ' + DatosJson[i].Paciente + ' onclick="rechazar(this)" type="button" class="btn btn-danger">Rechazar</button> ' + '</tr></tbody>');
+                        } else {
+                            var usuario = sessionStorage.buscar
+                            if (DatosJson[i].Doctor == usuario) {
+                                $("#tablaAceptadas").append('<tbody><tr>' +
+                                    '<td  style="dislay: none;" scope="row">' + DatosJson[i].Fecha + '</td>' +
+                                    '<td  style="dislay: none;">' + DatosJson[i].Hora + '</td>' +
+                                    '<td  style="dislay: none;">' + DatosJson[i].Motivo + '</td>' +
+                                    '<td  style="dislay: none;"> <button onclick="completar(this)" type="button" value= ' + DatosJson[i].Paciente + ' class="btn btn-success">Completada</button>');
+                            }
+
+                        }
+                    }
+                })
+
+        }
+
+        function aceptar(boton) {
+            var paciente = boton.value
+
+            fetch(`https://backend-uhospital-k.herokuapp.com/Citas/${paciente}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            })
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response => {
+                    var doc = sessionStorage.buscar
+                    var objeto = {
+                        'doctor': doc,
+                        'fecha': response.Fecha,
+                        'hora': response.Hora,
+                        'motivo': response.Motivo,
+                        'estado': 'Aceptada'
+                    }
+                    fetch(`https://backend-uhospital-k.herokuapp.com/Citas/${paciente}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(objeto),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*',
+                        }
+                    })
+                        .then(res => res.json())
+                        .catch(err => {
+                            console.error('Error:', err)
+                            alert("Ocurrio un error, ver la consola")
+                        })
+                        .then(response => {
+                            console.log(response.Mensaje)
+                            cargar()
+                        })
+
+                })
+        }
+
+        function rechazar(boton) {
+            var paciente = boton.value
+
+            fetch(`https://backend-uhospital-k.herokuapp.com/Citas/${paciente}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            })
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response => {
+
+                    var objeto = {
+                        'doctor': '',
+                        'fecha': response.Fecha,
+                        'hora': response.Hora,
+                        'motivo': response.Motivo,
+                        'estado': 'Rechazada'
+                    }
+                    fetch(`https://backend-uhospital-k.herokuapp.com/Citas/${paciente}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(objeto),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*',
+                        }
+                    })
+                        .then(res => res.json())
+                        .catch(err => {
+                            console.error('Error:', err)
+                            alert("Ocurrio un error, ver la consola")
+                        })
+                        .then(response => {
+                            console.log(response.Mensaje)
+                            cargar()
+                        })
+
+                })
+        }
+
+        function completar(boton) {
+            var paciente = boton.value
+
+            fetch(`https://backend-uhospital-k.herokuapp.com/Citas/${paciente}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            })
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response => {
+
+                    var objeto = {
+                        'doctor': '',
+                        'fecha': response.Fecha,
+                        'hora': response.Hora,
+                        'motivo': response.Motivo,
+                        'estado': 'Completada'
+                    }
+                    fetch(`https://backend-uhospital-k.herokuapp.com/Citas/${paciente}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(objeto),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*',
+                        }
+                    })
+                        .then(res => res.json())
+                        .catch(err => {
+                            console.error('Error:', err)
+                            alert("Ocurrio un error, ver la consola")
+                        })
+                        .then(response => {
+                            console.log(response.Mensaje)
+                            actualizar()
+                            cargar()
+                        })
+
+                })
+        }
+        function actualizar() {
+            var doc = sessionStorage.buscar
+
+            fetch(`https://backend-uhospital-k.herokuapp.com/Doctores/${doc}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                }
+            })
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Ocurrio un error, ver la consola")
+                })
+                .then(response => {
+
+                    var acep = ((response.Aceptadas) + 1)
+
+                    var objeto = {
+                        'nombre': response.Nombre,
+                        'apellido': response.Apellido,
+                        'nacimiento': response.Nacimiento,
+                        'sexo': response.Sexo,
+                        'usuario': response.Usuario,
+                        'contra': response.Contraseña,
+                        'especialidad': response.Especialidad,
+                        'telefono': response.Teléfono,
+                        'aceptadas': acep
+                    }
+
+                    fetch(`https://backend-uhospital-k.herokuapp.com/Doctores/${doc}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(objeto),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*',
+                        }
+                    })
+                        .then(res => res.json())
+                        .catch(err => {
+                            console.error('Error:', err)
+                            alert("Ocurrio un error, ver la consola")
+                        })
+                        .then(response => {
+
+                        })
+                })
+        }
+        function receta() {
+            window.open("Receta.html")
+        }
+
+    </script>
+</body>
+
+</html>

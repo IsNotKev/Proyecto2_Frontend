@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <title>UHospital - Admin</title>
+</head>
+
+<body onload="cargarDatos()" style="background: #DBDBDB;overflow-x: hidden;">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">
+      <img src="src/Logo.png" alt="" width="30" height="30">
+    </a>
+    <a class="navbar-brand" href="#">UHospital - Admin</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+      aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="cargar(this)">Cargar</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="visualzar(this)">Visualizar</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="cerrar(this)">Cerrar Sesión</a>
+        </li>
+
+      </ul>
+
+    </div>
+  </nav>
+
+  <br><br><br>
+
+  <div class="nav nav-tabs" id="nav-tab" role="tablist" style="justify-content: center;width: 60%;margin: auto;">
+    <button class="nav-link active" id="nav-paciente-tab" data-bs-toggle="tab" data-bs-target="#nav-paciente"
+      type="button" role="tab" aria-controls="nav-paciente" aria-selected="true">Pacientes</button>
+    <button class="nav-link" id="nav-medicos-tab" data-bs-toggle="tab" data-bs-target="#nav-medicos" type="button"
+      role="tab" aria-controls="nav-medicos" aria-selected="false">Médicos</button>
+    <button class="nav-link" id="nav-enfermeras-tab" data-bs-toggle="tab" data-bs-target="#nav-enfermeras" type="button"
+      role="tab" aria-controls="nav-enfermeras" aria-selected="false">Enfermeras</button>
+    <button class="nav-link" id="nav-medicamentos-tab" data-bs-toggle="tab" data-bs-target="#nav-medicamentos"
+      type="button" role="tab" aria-controls="nav-medicamentos" aria-selected="false">Medicamentos</button>
+    <button class="nav-link" id="nav-reportes-tab" data-bs-toggle="tab" data-bs-target="#nav-reportes" type="button"
+      role="tab" aria-controls="nav-reportes" aria-selected="false">Reportes</button>
+  </div>
+
+  <div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-paciente" role="tabpanel" aria-labelledby="nav-paciente-tab">
+      <br><br>
+      <table class="table table" style="width: 50%;margin: auto;" id="tablaPacientes">
+
+      </table>
+      <br><br>
+      <center><button onclick="reportePacientes()" type="button" class="btn btn-primary" style="width: 20%;">Generar
+          Reporte de Pacientes</button></center>
+    </div>
+    <div class="tab-pane fade" id="nav-medicos" role="tabpanel" aria-labelledby="nav-medicos-tab">
+      <br><br>
+      <table class="table table" style="width: 50%;margin: auto;" id="tablaMedicos">
+
+      </table>
+      <br><br>
+      <center><button onclick="reporteMedicos()" type="button" class="btn btn-primary" style="width: 20%;">Generar
+          Reporte de Médicos</button>
+      </center>
+    </div>
+    <div class="tab-pane fade" id="nav-enfermeras" role="tabpanel" aria-labelledby="nav-enfermeras-tab">
+      <br><br>
+      <table class="table table" style="width: 50%;margin: auto;" id="tablaEnfermeras">
+
+      </table>
+      <br><br>
+      <center><button onclick="reporteEnfermeras()" type="button" class="btn btn-primary" style="width: 20%;">Generar
+          Reporte de Enfermeras</button>
+      </center>
+    </div>
+    <div class="tab-pane fade" id="nav-medicamentos" role="tabpanel" aria-labelledby="nav-medicamentos-tab">
+      <br><br>
+      <table class="table table" style="width: 50%;margin: auto;" id="tablaMedicamentos">
+
+      </table>
+      <br><br>
+      <center><button onclick="reporteMedicamentos()" type="button" class="btn btn-primary" style="width: 20%;">Generar
+          Reporte de Medicamentos</button>
+      </center>
+    </div>
+    <div class="tab-pane fade" id="nav-reportes" role="tabpanel" aria-labelledby="nav-reportes-tab">
+      <br><br>
+      <center><button onclick="topMedicamentos()" type="button" class="btn btn-primary" style="width: 30%;">Generar
+          Top 5 Medicamentos Más Vendidos</button>
+        <br><br>
+        <button onclick="topDoctores()" type="button" class="btn btn-primary" style="width: 30%;">Generar
+          Top 3 Doctores Con Más Atenciones</button>
+        <br><br>
+        <button onclick="topEnfermedades()" type="button" class="btn btn-primary" style="width: 30%;">Generar
+          Top Enfermedades Más Comunes</button>
+      </center>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+    crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="jsPDF-1.3.2/dist/jspdf.min.js"></script>
+  <script src="jsPDF-AutoTable-master/dist/jspdf.plugin.autotable.min.js"></script>
+  <script>
+
+
+    function cerrar(boton) {
+      location.href = "InicioSesion.html"
+    }
+
+
+    function cargar(boton) {
+      location.href = "Admin.html"
+    }
+
+    function visualzar(boton) {
+      location.href = "Visualizar.html"
+    }
+
+
+    function cargarDatos() {
+
+      fetch('https://backend-uhospital-k.herokuapp.com/Pacientes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          var DatosJson = JSON.parse(JSON.stringify(response));
+          $("#tablaPacientes").empty()
+          $("#tablaPacientes").append('<thead><tr class="table-dark"><th scope="col">No.</th><th scope="col">Nombre</th><th scope="col">Apellido</th><th scope="col">Sexo</th><th scope="col">Opciones</th></tr></thead>')
+          for (i = 0; i < DatosJson.length; i++) {
+            $("#tablaPacientes").append('<tbody><tr>' +
+              '<td  style="dislay: none;" scope="row">' + (i + 1) + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Nombre + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Apellido + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Sexo + '</td>' +
+              '<td  style="dislay: none;"> <button onclick="verPaciente(this)" type="button" value= ' + DatosJson[i].Usuario + ' class="btn btn-info">Ver</button>   <button value= ' + DatosJson[i].Usuario + ' onclick="modificarPaciente(this)" type="button" class="btn btn-success">Modificar</button>   <button onclick="eliminarPaciente(this)" value= ' + DatosJson[i].Usuario + ' type="button" class="btn btn-danger" style:"margin-left:10px;">Eliminar</button></td>' + '</tr></tbody>');
+          }
+        })
+
+      fetch('https://backend-uhospital-k.herokuapp.com/Doctores', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          var DatosJson = JSON.parse(JSON.stringify(response));
+          $("#tablaMedicos").empty()
+          $("#tablaMedicos").append('<thead><tr class="table-dark"><th scope="col">No.</th><th scope="col">Nombre</th><th scope="col">Apellido</th><th scope="col">Sexo</th><th scope="col">Especialidad</th><th scope="col">Opciones</th></tr></thead>')
+          for (i = 0; i < DatosJson.length; i++) {
+            $("#tablaMedicos").append('<tbody><tr>' +
+              '<td  style="dislay: none;" scope="row">' + (i + 1) + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Nombre + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Apellido + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Sexo + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Especialidad + '</td>' +
+              '<td  style="dislay: none;"><button onclick="verMedico(this)" value= ' + DatosJson[i].Usuario + ' type="button" class="btn btn-info">Ver</button> <button value= ' + DatosJson[i].Usuario + ' onclick="modificarDoctor(this)" type="button" class="btn btn-success">Modificar</button><button onclick="eliminarDoctor(this)" value= ' + DatosJson[i].Usuario + ' type="button" class="btn btn-danger" style:"margin-left:10px;">Eliminar</button></td>' + '</tr></tbody>');
+          }
+        })
+
+      fetch('https://backend-uhospital-k.herokuapp.com/Enfermeras', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          var DatosJson = JSON.parse(JSON.stringify(response));
+          $("#tablaEnfermeras").empty()
+          $("#tablaEnfermeras").append('<thead><tr class="table-dark"><th scope="col">No.</th><th scope="col">Nombre</th><th scope="col">Apellido</th><th scope="col">Sexo</th><th scope="col">Opciones</th></tr></thead>')
+          for (i = 0; i < DatosJson.length; i++) {
+            $("#tablaEnfermeras").append('<tbody><tr>' +
+              '<td  style="dislay: none;" scope="row">' + (i + 1) + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Nombre + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Apellido + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Sexo + '</td>' +
+              '<td  style="dislay: none;"><button onclick="verEnfermera(this)" value= ' + DatosJson[i].Usuario + ' type="button" class="btn btn-info">Ver</button> <button value= ' + DatosJson[i].Usuario + ' onclick="modificarEnfermera(this)" type="button" class="btn btn-success">Modificar</button><button onclick="eliminarEnfermera(this)" value= ' + DatosJson[i].Usuario + ' type="button" class="btn btn-danger" style:"margin-left:10px;">Eliminar</button></td>' + '</tr></tbody>');
+          }
+        })
+
+      fetch('https://backend-uhospital-k.herokuapp.com/Medicamentos', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          var DatosJson = JSON.parse(JSON.stringify(response));
+          $("#tablaMedicamentos").empty()
+          $("#tablaMedicamentos").append('<thead><tr class="table-dark"><th scope="col">Id</th><th scope="col">Nombre</th><th scope="col">Cantidad</th><th scope="col">Opciones</th></tr></thead>')
+          for (i = 0; i < DatosJson.length; i++) {
+            $("#tablaMedicamentos").append('<tbody><tr>' +
+              '<td  style="dislay: none;" scope="row">' + DatosJson[i].Id + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Nombre + '</td>' +
+              '<td  style="dislay: none;">' + DatosJson[i].Cantidad + '</td>' +
+              '<td  style="dislay: none;"><button onclick="verMedicamento(this)" value= ' + DatosJson[i].Id + ' type="button" class="btn btn-info">Ver</button> <button value= ' + DatosJson[i].Id + ' onclick="modificarMedicamento(this)" type="button" class="btn btn-success">Modificar</button><button onclick="eliminarMedicamento(this)" value= ' + DatosJson[i].Id + ' type="button" class="btn btn-danger" style:"margin-left:10px;">Eliminar</button></td>' + '</tr></tbody>');
+          }
+        })
+    }
+
+    function eliminarPaciente(boton) {
+      console.log(boton)
+      var usuario = boton.value
+
+      fetch(`https://backend-uhospital-k.herokuapp.com/Pacientes/${usuario}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          console.log(response);
+          alert(response.Mensaje)
+          cargarDatos()
+        })
+    }
+
+    function eliminarDoctor(boton) {
+      console.log(boton)
+      var usuario = boton.value
+
+      fetch(`https://backend-uhospital-k.herokuapp.com/Doctores/${usuario}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          console.log(response);
+          alert(response.Mensaje)
+          cargarDatos()
+        })
+    }
+
+    function eliminarEnfermera(boton) {
+      console.log(boton)
+      var usuario = boton.value
+
+      fetch(`https://backend-uhospital-k.herokuapp.com/Enfermeras/${usuario}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          console.log(response);
+          alert(response.Mensaje)
+          cargarDatos()
+        })
+    }
+
+    function eliminarMedicamento(boton) {
+      console.log(boton)
+      var nombre = boton.value
+
+      fetch(`https://backend-uhospital-k.herokuapp.com/Medicamentos/${nombre}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          console.log(response);
+          alert(response.Mensaje)
+          cargarDatos()
+        })
+    }
+
+    function reportePacientes() {
+      fetch('https://backend-uhospital-k.herokuapp.com/Pacientes', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          var DatosJson = JSON.parse(JSON.stringify(response));
+          var doc = new jsPDF();
+          doc.line(10, 10, 200, 10);
+          doc.text(70, 20, "*** UHospital - Pacientes ***");
+          doc.line(10, 25, 200, 25);
+          doc.autoTable({
+            body: response,
+            columns: [
+              { header: 'Nombre', dataKey: 'Nombre' },
+              { header: 'Apellido', dataKey: 'Apellido' },
+              { header: 'Nacimiento', dataKey: 'Nacimiento' },
+              { header: 'Sexo', dataKey: 'Sexo' },
+              { header: 'Usuario', dataKey: 'Usuario' },
+              { header: 'Contraseña', dataKey: 'Contraseña' },
+              { header: 'Teléfono', dataKey: 'Teléfono' },
+            ],
+            margin: { top: 35 }
+          })
+
+          doc.save("Pacientes_UHospital.pdf");
+        })
+    }
+
+    function reporteEnfermeras() {
+      fetch('https://backend-uhospital-k.herokuapp.com/Enfermeras', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          var DatosJson = JSON.parse(JSON.stringify(response));
+          var doc = new jsPDF();
+          doc.line(10, 10, 200, 10);
+          doc.text(75, 20, "*** UHospital - Enfermeras ***");
+          doc.line(10, 25, 200, 25);
+          doc.autoTable({
+            body: response,
+            columns: [
+              { header: 'Nombre', dataKey: 'Nombre' },
+              { header: 'Apellido', dataKey: 'Apellido' },
+              { header: 'Nacimiento', dataKey: 'Nacimiento' },
+              { header: 'Sexo', dataKey: 'Sexo' },
+              { header: 'Usuario', dataKey: 'Usuario' },
+              { header: 'Contraseña', dataKey: 'Contraseña' },
+              { header: 'Teléfono', dataKey: 'Teléfono' },
+            ],
+            margin: { top: 35 }
+          })
+
+          doc.save("Enfermeras_UHospital.pdf");
+        })
+    }
+
+    function reporteMedicos() {
+      fetch('https://backend-uhospital-k.herokuapp.com/Doctores', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          var DatosJson = JSON.parse(JSON.stringify(response));
+          var doc = new jsPDF();
+          doc.line(10, 10, 200, 10);
+          doc.text(75, 20, "*** UHospital - Medicos ***");
+          doc.line(10, 25, 200, 25);
+          doc.autoTable({
+            body: response,
+            columns: [
+              { header: 'Nombre', dataKey: 'Nombre' },
+              { header: 'Apellido', dataKey: 'Apellido' },
+              { header: 'Nacimiento', dataKey: 'Nacimiento' },
+              { header: 'Sexo', dataKey: 'Sexo' },
+              { header: 'Usuario', dataKey: 'Usuario' },
+              { header: 'Contraseña', dataKey: 'Contraseña' },
+              { header: 'Especialidad', dataKey: 'Especialidad' },
+              { header: 'Teléfono', dataKey: 'Teléfono' },
+            ],
+            margin: { top: 35 }
+          })
+
+          doc.save("Medicos_UHospital.pdf");
+        })
+    }
+
+    function reporteMedicamentos() {
+      fetch('https://backend-uhospital-k.herokuapp.com/Medicamentos', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          var DatosJson = JSON.parse(JSON.stringify(response));
+          var doc = new jsPDF();
+          doc.line(10, 10, 200, 10);
+          doc.text(75, 20, "*** UHospital - Medicamentos ***");
+          doc.line(10, 25, 200, 25);
+
+          doc.autoTable({
+            body: response,
+            columns: [
+              { header: 'Id', dataKey: 'Id' },
+              { header: 'Nombre', dataKey: 'Nombre' },
+              { header: 'Precio', dataKey: 'Precio' },
+              { header: 'Descripcion', dataKey: 'Descripcion' },
+              { header: 'Cantidad', dataKey: 'Cantidad' },
+            ],
+            margin: { top: 35 }
+          })
+
+          doc.save("Medicamentos_UHospital.pdf");
+        })
+    }
+
+    function verPaciente(boton) {
+      var usuario = boton.value
+      var tipo = "paciente"
+      sessionStorage.setItem("buscar", usuario)
+      sessionStorage.setItem("tipo", tipo)
+      location.href = "Ver.html"
+    }
+    function verEnfermera(boton) {
+      var usuario = boton.value
+      var tipo = "enfermera"
+      sessionStorage.setItem("buscar", usuario)
+      sessionStorage.setItem("tipo", tipo)
+      location.href = "Ver.html"
+    }
+
+    function verMedico(boton) {
+      var usuario = boton.value
+      var tipo = "medico"
+      sessionStorage.setItem("buscar", usuario)
+      sessionStorage.setItem("tipo", tipo)
+      location.href = "Ver.html"
+    }
+
+    function verMedicamento(boton) {
+      var usuario = boton.value
+      var tipo = "medicamento"
+      sessionStorage.setItem("buscar", usuario)
+      sessionStorage.setItem("tipo", tipo)
+      location.href = "Ver.html"
+    }
+
+    function modificarPaciente(boton) {
+      var usuario = boton.value
+      var tipo = "paciente"
+      var regreso = "admin"
+      sessionStorage.setItem("regreso", regreso)
+      sessionStorage.setItem("buscar", usuario)
+      sessionStorage.setItem("tipo", tipo)
+      location.href = "Modificar.html"
+    }
+
+    function modificarEnfermera(boton) {
+      var usuario = boton.value
+      var tipo = "enfermera"
+      var regreso = "admin"
+      sessionStorage.setItem("regreso", regreso)
+      sessionStorage.setItem("buscar", usuario)
+      sessionStorage.setItem("tipo", tipo)
+      location.href = "Modificar.html"
+    }
+
+    function modificarDoctor(boton) {
+      var usuario = boton.value
+      var tipo = "doc"
+      var regreso = "admin"
+      sessionStorage.setItem("regreso", regreso)
+      sessionStorage.setItem("buscar", usuario)
+      sessionStorage.setItem("tipo", tipo)
+      location.href = "Modificar.html"
+    }
+
+    function modificarMedicamento(boton) {
+      var usuario = boton.value
+      var tipo = "medicamento"
+      var regreso = "admin"
+      sessionStorage.setItem("regreso", regreso)
+      sessionStorage.setItem("buscar", usuario)
+      sessionStorage.setItem("tipo", tipo)
+      location.href = "Modificar.html"
+    }
+
+    function topMedicamentos() {
+      fetch('https://backend-uhospital-k.herokuapp.com/Medicamentos', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          var DatosJson = JSON.parse(JSON.stringify(response));
+          let datos = []
+          for (i = 0; i < DatosJson.length; i++) {
+            var d = [DatosJson[i].Vendidos, DatosJson[i].Nombre]
+            datos.push(d)
+          }
+
+          var aux = []
+          for (a = 0; a < datos.length; a++) {
+            for (b = 0; b < datos.length; b++) {
+              if (datos[a][0] > datos[b][0]) {
+                aux = datos[a];
+                datos[a] = datos[b];
+                datos[b] = aux;
+              }
+            }
+          }
+
+          console.log(datos)
+
+          let objeto = []
+
+          for (i = 0; i < 5; i++) {
+            if (datos[i] != null) {
+              var l = {
+                'Top': (1 + i),
+                'Nombre': datos[i][1],
+                'Vendidos': datos[i][0]
+              }
+              objeto.push(l)
+            } else {
+              var l = {
+                'Top': (1 + i),
+                'Nombre': '',
+                'Vendidos': ''
+              }
+              objeto.push(l)
+            }
+          }
+
+          var doc = new jsPDF();
+          doc.line(10, 10, 200, 10);
+          doc.text(75, 20, "*** Top Medicamentos ***");
+          doc.line(10, 25, 200, 25);
+
+          doc.autoTable({
+            body: objeto,
+            columns: [
+              { header: 'Top', dataKey: 'Top' },
+              { header: 'Nombre', dataKey: 'Nombre' },
+              { header: 'Unidades Vendidas', dataKey: 'Vendidos' },
+            ],
+            margin: { top: 35 }
+          })
+
+          doc.save("TopMedicamentos_UHospital.pdf");
+
+
+        })
+    }
+
+    function topEnfermedades() {
+      fetch('https://backend-uhospital-k.herokuapp.com/Enfermedades', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          let datos = []
+          for (i = 0; i < response.length; i++) {
+            datos.push(response[i].Nombre)
+          }
+
+          const repeticiones = {};
+
+          // Ciclamos el texto del input y verificamos si existe y sumamos 1, de no existir siempre valdrá 1
+          datos.forEach((letra) => {
+            repeticiones[letra] = (repeticiones[letra] || 0) + 1;
+          });
+
+          // Ahora ciclamos el objeto y lo agregamos al resultado
+          let data = []
+          for (let letra in repeticiones) {
+            const s = [repeticiones[letra], letra]
+
+            data.push(s)
+          }
+
+          var aux = []
+          for (a = 0; a < data.length; a++) {
+            for (b = 0; b < data.length; b++) {
+              if (data[a][0] > data[b][0]) {
+                aux = data[a];
+                data[a] = data[b];
+                data[b] = aux;
+              }
+            }
+          }
+
+          console.log(data)
+
+          let objeto = []
+
+          for (i = 0; i < data.length; i++) {
+            var d = {
+              'Top': (i + 1),
+              'Nombre': data[i][1],
+              'Veces': data[i][0]
+            }
+            objeto.push(d)
+          }
+
+          var doc = new jsPDF();
+          doc.line(10, 10, 200, 10);
+          doc.text(75, 20, "*** Top Enfermedades ***");
+          doc.line(10, 25, 200, 25);
+
+          doc.autoTable({
+            body: objeto,
+            columns: [
+              { header: 'Top', dataKey: 'Top' },
+              { header: 'Nombre', dataKey: 'Nombre' },
+              { header: 'Frecuencia', dataKey: 'Veces' },
+            ],
+            margin: { top: 35 }
+          })
+
+          doc.save("TopEnfermedades_UHospital.pdf");
+        })
+    }
+
+    function topDoctores() {
+      fetch('https://backend-uhospital-k.herokuapp.com/Doctores', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      })
+        .then(res => res.json())
+        .catch(err => {
+          console.error('Error:', err)
+          alert("Ocurrio un error, ver la consola")
+        })
+        .then(response => {
+          var DatosJson = JSON.parse(JSON.stringify(response));
+          let datos = []
+          for (i = 0; i < DatosJson.length; i++) {
+            var d = [DatosJson[i].Aceptadas, DatosJson[i].Nombre + ' ' + DatosJson[i].Apellido]
+            datos.push(d)
+          }
+
+          var aux = []
+          for (a = 0; a < datos.length; a++) {
+            for (b = 0; b < datos.length; b++) {
+              if (datos[a][0] > datos[b][0]) {
+                aux = datos[a];
+                datos[a] = datos[b];
+                datos[b] = aux;
+              }
+            }
+          }
+
+          console.log(datos)
+
+          let objeto = []
+
+          for (i = 0; i < 3; i++) {
+            if (datos[i] != null) {
+              var l = {
+                'Top': (1 + i),
+                'Nombre': datos[i][1],
+                'Completadas': datos[i][0]
+              }
+              objeto.push(l)
+            } else {
+              var l = {
+                'Top': (1 + i),
+                'Nombre': '',
+                'Completadas': ''
+              }
+              objeto.push(l)
+            }
+          }
+
+          var doc = new jsPDF();
+          doc.line(10, 10, 200, 10);
+          doc.text(75, 20, "*** Top Médicos ***");
+          doc.line(10, 25, 200, 25);
+
+          doc.autoTable({
+            body: objeto,
+            columns: [
+              { header: 'Top', dataKey: 'Top' },
+              { header: 'Nombre', dataKey: 'Nombre' },
+              { header: 'Citas Completadas', dataKey: 'Completadas' },
+            ],
+            margin: { top: 35 }
+          })
+
+          doc.save("TopDoctores_UHospital.pdf");
+
+
+        })
+    }
+  </script>
+
+</body>
+
+</html>
