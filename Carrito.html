@@ -73,7 +73,7 @@
             console.log(boton)
             var nombre = boton.value
 
-            fetch(`https://backend-uhospital-k.herokuapp.com/Medicamentos/${nombre}`, {
+            fetch(`https://backend-uhospital-k.herokuapp.com/Carrito/${nombre}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -197,7 +197,7 @@
                         'cant': resultado,
                         'vendidos' : parseInt(vendidos)
                     }
-                    fetch(`https://backend-uhospital-k.herokuapp.com/${id}`, {
+                    fetch(`https://backend-uhospital-k.herokuapp.com/Medicamentos/${id}`, {
                         method: 'PUT',
                         body: JSON.stringify(objeto),
                         headers: {
